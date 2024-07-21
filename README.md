@@ -1,5 +1,5 @@
 # SpotFix
-## Aim: A platform that crowd sources civic-issues (water, electricity, construction and sanitation) from around a community, open sources data, etc. and display them on a map.
+## A platform that crowd sources civic-issues (water, electricity, construction and sanitation) from around a community, open sources data, etc. and display them on a map.
 
 ## Welcome to the SpotFix Problem/Complaint Reporting Dashboard!
 This website and application is designed to empower you, the public, to report any issues or concerns you encounter. We take every complaint seriously and strive to address them promptly and
