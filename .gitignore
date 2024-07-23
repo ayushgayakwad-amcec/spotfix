@@ -35,5 +35,4 @@ output.json
 #NDK
 obj/
 .externalNativeBuild
-spotfix-twitter-bot/spotfixtwitterbot.py
 spotfix-twitter-bot/spotfix-ambition-firebase-adminsdk-hve5p-4fd0a8e263.json
