@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
     
     <style>
       body, html {
@@ -34,10 +35,36 @@
           margin-right: 8px;
           opacity: 0.7;
       }
+      .filter-controls {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          background: white;
+          padding: 10px;
+          z-index: 1000;
+          border-radius: 5px;
+      }
+      .filter-controls select, .filter-controls input {
+          margin: 5px 0;
+          padding: 5px;
+      }
     </style>
 </head>
 <body>
   <div id="map"></div>
+  <div class="filter-controls">
+    <label for="issueType">Issue Type:</label>
+    <select id="issueType">
+      <option value="all">All</option>
+      <option value="electricity">Electricity</option>
+      <option value="water">Water</option>
+      <option value="construction">Construction</option>
+      <option value="sanitation">Sanitation</option>
+    </select>
+    <label for="searchRadius">Search Radius (km):</label>
+    <input type="number" id="searchRadius" value="50" min="1" max="100" />
+    <button onclick="applyFilters()">Apply Filters</button>
+  </div>
     
     <script>
         const firebaseConfig = {
@@ -60,13 +87,17 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        function addMarker(lat, lng, color, desc, status) {
+        const heatData = [];
+        const allMarkers = [];
+        let heatLayer;
+
+        function addMarker(lat, lng, color, desc, status, category) {
             if (status === "unsolved") {
-                L.circleMarker([lat, lng], { color: color, radius: 4 })
+                const marker = L.circleMarker([lat, lng], { color: color, radius: 4 })
                     .bindPopup(desc)
                     .addTo(map);
-            } else {
-                return;
+                allMarkers.push({ marker, category });
+                heatData.push([lat, lng, 1]);
             }
         }
 
@@ -79,9 +110,17 @@
                         const lng = data[key].longitude;
                         const desc = data[key].desc || "No description available";
                         const status = data[key].status || "solved";
-                        addMarker(lat, lng, color, desc, status);
+                        addMarker(lat, lng, color, desc, status, path);
                     }
                 }
+                if (heatLayer) {
+                    map.removeLayer(heatLayer);
+                }
+                heatLayer = L.heatLayer(heatData, {
+                    radius: 25,
+                    blur: 15,
+                    maxZoom: 17
+                }).addTo(map);
             });
         }
 
@@ -102,6 +141,36 @@
         };
 
         legend.addTo(map);
+
+        function applyFilters() {
+            const selectedType = document.getElementById('issueType').value;
+            const searchRadius = document.getElementById('searchRadius').value;
+            const center = map.getCenter();
+            const radius = searchRadius * 1000;
+
+            allMarkers.forEach(item => {
+                if ((selectedType === 'all' || item.category === selectedType) &&
+                    map.distance(center, item.marker.getLatLng()) <= radius) {
+                    map.addLayer(item.marker);
+                } else {
+                    map.removeLayer(item.marker);
+                }
+            });
+
+            if (heatLayer) {
+                map.removeLayer(heatLayer);
+            }
+            const filteredHeatData = heatData.filter(point => {
+                const pointLatLng = L.latLng(point[0], point[1]);
+                return map.distance(center, pointLatLng) <= radius &&
+                       (selectedType === 'all' || item.category === selectedType);
+            });
+            heatLayer = L.heatLayer(filteredHeatData, {
+                radius: 25,
+                blur: 15,
+                maxZoom: 17
+            }).addTo(map);
+        }
     </script>
 </body>
 </html>

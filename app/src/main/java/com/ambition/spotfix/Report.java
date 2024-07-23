@@ -51,6 +51,8 @@ import com.google.firebase.storage.UploadTask;
 
 import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -61,6 +63,7 @@ public class Report extends AppCompatActivity {
     private HashMap<String, Object> map = new HashMap<>();
     private static final int PICK_IMAGE_REQUEST = 1;
     private String imagestate = "";
+    private String timestamp = "";
     private String DownloadUri = "";
     private TextView progresst;
     private LinearLayout linear2;
@@ -200,6 +203,7 @@ public class Report extends AppCompatActivity {
                         }
                         else {
                             if (department.getText().toString().trim().equals("Water Department")) {
+                                timestamp = getCurrentTimestamp();
                                 map = new HashMap<>();
                                 map.put("name", userdata.getString("name", ""));
                                 map.put("desc", desc.getText().toString().trim());
@@ -208,6 +212,7 @@ public class Report extends AppCompatActivity {
                                 map.put("longitude", userdata.getString("longitude", ""));
                                 map.put("image", DownloadUri);
                                 map.put("status", "unsolved");
+                                map.put("reported_time", timestamp);
                                 map.put("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
                                 map.put("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
                                 water.push().updateChildren(map);
@@ -217,6 +222,7 @@ public class Report extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Report submitted!", Toast.LENGTH_SHORT).show();
                             } else {
                                 if (department.getText().toString().trim().equals("Electricity Department")) {
+                                    timestamp = getCurrentTimestamp();
                                     map = new HashMap<>();
                                     map.put("name", userdata.getString("name", ""));
                                     map.put("desc", desc.getText().toString().trim());
@@ -225,6 +231,7 @@ public class Report extends AppCompatActivity {
                                     map.put("longitude", userdata.getString("longitude", ""));
                                     map.put("image", DownloadUri);
                                     map.put("status", "unsolved");
+                                    map.put("reported_time", timestamp);
                                     map.put("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
                                     map.put("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
                                     electricity.push().updateChildren(map);
@@ -234,6 +241,7 @@ public class Report extends AppCompatActivity {
                                     Toast.makeText(getApplicationContext(), "Report submitted!", Toast.LENGTH_SHORT).show();
                                 } else {
                                     if (department.getText().toString().trim().equals("Construction Department")) {
+                                        timestamp = getCurrentTimestamp();
                                         map = new HashMap<>();
                                         map.put("name", userdata.getString("name", ""));
                                         map.put("desc", desc.getText().toString().trim());
@@ -242,6 +250,7 @@ public class Report extends AppCompatActivity {
                                         map.put("longitude", userdata.getString("longitude", ""));
                                         map.put("image", DownloadUri);
                                         map.put("status", "unsolved");
+                                        map.put("reported_time", timestamp);
                                         map.put("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
                                         map.put("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
                                         construction.push().updateChildren(map);
@@ -251,6 +260,7 @@ public class Report extends AppCompatActivity {
                                         Toast.makeText(getApplicationContext(), "Report submitted!", Toast.LENGTH_SHORT).show();
                                     } else {
                                         if (department.getText().toString().trim().equals("Sanitation Department")) {
+                                            timestamp = getCurrentTimestamp();
                                             map = new HashMap<>();
                                             map.put("name", userdata.getString("name", ""));
                                             map.put("desc", desc.getText().toString().trim());
@@ -259,6 +269,7 @@ public class Report extends AppCompatActivity {
                                             map.put("longitude", userdata.getString("longitude", ""));
                                             map.put("image", DownloadUri);
                                             map.put("status", "unsolved");
+                                            map.put("reported_time", timestamp);
                                             map.put("email", FirebaseAuth.getInstance().getCurrentUser().getEmail());
                                             map.put("uid", FirebaseAuth.getInstance().getCurrentUser().getUid());
                                             sanitation.push().updateChildren(map);
@@ -554,6 +565,12 @@ public class Report extends AppCompatActivity {
                         progresst.setVisibility(View.GONE);
                     }
                 });
+    }
+
+    public static String getCurrentTimestamp() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date now = new Date();
+        return sdf.format(now);
     }
 
     public void _rippleRoundStroke(final View _view, final String _focus, final String _pressed, final double _round, final double _stroke, final String _strokeclr) {
